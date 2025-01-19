@@ -6,6 +6,7 @@ import (
 	"flag"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/clfs/perftfuzz/engine"
 	_ "github.com/clfs/perftfuzz/engine/stockfish"
@@ -17,7 +18,7 @@ func main() {
 
 	if *pathFlag == "" {
 		flag.Usage()
-		return
+		os.Exit(1)
 	}
 
 	ctx := context.Background()
