@@ -17,8 +17,8 @@ import (
 
 type translator struct {
 	name   string
-	encode func(*Request) (string, error)
-	decode func(io.Reader) (*Response, error)
+	encode EncodeFunc
+	decode DecodeFunc
 }
 
 var (
