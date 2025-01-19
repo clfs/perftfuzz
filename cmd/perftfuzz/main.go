@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"log"
 	"net/http"
@@ -27,5 +28,28 @@ func main() {
 	}
 	defer eng.Close()
 
-	http.ListenAndServe(":8080", eng)
+	fn := func(w http.ResponseWriter, httpReq *http.Request) {
+		var req engine.Request
+
+		if err := json.NewDecoder(httpReq.Body).Decode(&req); err != nil {
+			w.WriteHeader(http.StatusBadRequest) // 400
+			return
+		}
+
+		resp, err := eng.Do(&req)
+		if err != nil {
+			w.WriteHeader(http.StatusBadGateway) // 502
+			return
+		}
+
+		if err := json.NewEncoder(w).Encode(resp); err != nil {
+			w.WriteHeader(http.StatusBadGateway) // 502
+			return
+		}
+
+		w.WriteHeader(http.StatusOK) // 200
+	}
+
+	http.Handle("/", http.HandlerFunc(fn))
+	http.ListenAndServe(":8080", nil)
 }

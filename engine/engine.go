@@ -3,11 +3,9 @@ package engine
 import (
 	"bufio"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
-	"net/http"
 	"os/exec"
 	"slices"
 	"strings"
@@ -84,7 +82,7 @@ func New(ctx context.Context, path string) (*Engine, error) {
 	return eng, nil
 }
 
-func (e *Engine) do(req *Request) (*Response, error) {
+func (e *Engine) Do(req *Request) (*Response, error) {
 	commands, err := e.t.encode(req)
 	if err != nil {
 		return nil, fmt.Errorf("encode: %v", err)
@@ -125,28 +123,6 @@ func (e *Engine) name() (string, error) {
 	}
 
 	return res, nil
-}
-
-func (e *Engine) ServeHTTP(w http.ResponseWriter, httpReq *http.Request) {
-	var req Request
-
-	if err := json.NewDecoder(httpReq.Body).Decode(&req); err != nil {
-		w.WriteHeader(http.StatusBadRequest) // 400
-		return
-	}
-
-	resp, err := e.do(&req)
-	if err != nil {
-		w.WriteHeader(http.StatusBadGateway) // 502
-		return
-	}
-
-	if err := json.NewEncoder(w).Encode(resp); err != nil {
-		w.WriteHeader(http.StatusBadGateway) // 502
-		return
-	}
-
-	w.WriteHeader(http.StatusOK) // 200
 }
 
 func (e *Engine) Close() error {
