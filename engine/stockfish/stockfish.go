@@ -15,7 +15,7 @@ func init() {
 	engine.Register(Name, Encode, Decode)
 }
 
-const Name = "Stockfish"
+const Name = "Stockfish 17"
 
 func Encode(req *engine.Request) (string, error) {
 	var sb strings.Builder

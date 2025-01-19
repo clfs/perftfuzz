@@ -11,24 +11,21 @@ import (
 )
 
 func main() {
-	var (
-		pathFlag = flag.String("path", "", "absolute path to the chess engine")
-		nameFlag = flag.String("name", "", "name of the chess engine")
-	)
+	var pathFlag = flag.String("path", "", "absolute path to the chess engine")
 	flag.Parse()
 
-	if *pathFlag == "" || *nameFlag == "" {
+	if *pathFlag == "" {
 		flag.Usage()
 		return
 	}
 
 	ctx := context.Background()
 
-	e, err := engine.New(ctx, *nameFlag, *pathFlag)
+	eng, err := engine.New(ctx, *pathFlag)
 	if err != nil {
 		log.Fatalf("new engine: %v", err)
 	}
-	defer e.Close()
+	defer eng.Close()
 
-	http.ListenAndServe(":8080", e)
+	http.ListenAndServe(":8080", eng)
 }
