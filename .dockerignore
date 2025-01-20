@@ -1,0 +1,4 @@
+# Ignore everything except Go files.
+*
+!go.mod
+!*.go

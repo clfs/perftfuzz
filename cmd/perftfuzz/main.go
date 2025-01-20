@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +14,10 @@ import (
 )
 
 func main() {
-	var pathFlag = flag.String("path", "", "absolute path to the chess engine")
+	var (
+		pathFlag = flag.String("path", "", "absolute path to the chess engine")
+		portFlag = flag.Int("port", 8080, "port to listen on")
+	)
 	flag.Parse()
 
 	if *pathFlag == "" {
@@ -52,5 +56,5 @@ func main() {
 	}
 
 	http.Handle("/", http.HandlerFunc(fn))
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(fmt.Sprintf(":%d", *portFlag), nil)
 }
