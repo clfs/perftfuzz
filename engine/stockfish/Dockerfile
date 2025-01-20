@@ -1,11 +1,11 @@
 # syntax=docker/dockerfile:1
 
-# Install perftfuzz.
-FROM golang:1.23.5 AS perftfuzz
+# Install ucihttp.
+FROM golang:1.23.5 AS ucihttp
 
 WORKDIR /tmp
 COPY . ./
-RUN go build ./cmd/perftfuzz
+RUN go build ./cmd/ucihttp
 
 # Install Stockfish.
 FROM ubuntu:24.04 AS stockfish
@@ -22,9 +22,9 @@ WORKDIR /tmp/Stockfish-sf_17/src
 RUN make net \
   && make -j profile-build
 
-# Run perftfuzz.
+# Run ucihttp.
 FROM scratch
 
-COPY --from=perftfuzz /tmp/cmd/perftfuzz /perftfuzz
+COPY --from=perftfuzz /tmp/cmd/ucihttp /ucihttp
 COPY --from=stockfish /tmp/Stockfish-sf_17/src/stockfish /stockfish
-CMD ["/perftfuzz", "--path", "/stockfish"]
+CMD ["/ucihttp", "--path", "/stockfish"]
